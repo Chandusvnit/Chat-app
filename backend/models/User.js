@@ -3,12 +3,12 @@ import bcrypt from 'bcryptjs';
 
 const userSchema = new mongoose.Schema(
     {
-        name:{type :string, required: true},
-        email:{type :string, required: true, unique: true},
-        password:{type :string, required: true},
-        ProfilePic:{type :string, required: true},
-        isOnline:{type :boolean, default: false},
-        lastOnline:{type :Date, default: Date.now},
+        name: { type: String, required: true },
+        email: { type: String, required: true, unique: true },
+        password: { type: String, required: true },
+        ProfilePic: { type: String, default: "" },
+        isOnline: { type: Boolean, default: false },
+        lastOnline: { type: Date, default: Date.now },
     },
     {
         timestamps: true,
