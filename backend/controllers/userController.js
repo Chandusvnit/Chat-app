@@ -59,3 +59,33 @@ export const getUsersForSidebar = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+
+// backend/controllers/userController.js (Add this new function)
+
+// @desc    Search users by name or email
+// @route   GET /api/users/search?q=keyword
+export const searchUsers = async (req, res) => {
+  try {
+    const { query } = req.query;
+    const currentUserId = req.user._id;
+
+    if (!query) {
+      return res.status(200).json([]);
+    }
+
+    // Find matches by name or email, excluding the logged-in user
+    const users = await User.find({
+      _id: { $ne: currentUserId },
+      $or: [
+        { name: { $regex: query, $options: "i" } },
+        { email: { $regex: query, $options: "i" } }
+      ]
+    }).select("-password");
+
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Error in searchUsers: ", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};

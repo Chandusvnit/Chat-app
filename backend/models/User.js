@@ -15,19 +15,20 @@ const userSchema = new mongoose.Schema(
     }
 );
 
-userSchema.pre('save' ,async function(next){
-    if(!this.isModified('password')){
-        return next();
-    }
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-});
 
 userSchema.methods.matchPassword = async function(enteredPassword){
     return await bcrypt.compare(enteredPassword, this.password);
 };
 
-const User = mongoose.model('User', userSchema);
+userSchema.pre('save', async function () {
+    // If the password hasn't been modified, just return early to stop execution
+    if (!this.isModified('password')) return;
 
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    
+    // NO next() call needed here! Mongoose automatically proceeds when this async function resolves.
+});
+
+const User = mongoose.model('User', userSchema);
 export default User;
